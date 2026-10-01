@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 
 export default function Login() {
@@ -8,6 +8,7 @@ export default function Login() {
   const [error, setError] = useState('');
   
   const login = useAuthStore((state) => state.login);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -15,11 +16,13 @@ export default function Login() {
     const isSuccess = login(username, password);
     
     if (isSuccess) {
-      navigate('/dashboard'); // Si es exitoso, lo enviamos a la vista principal
+      navigate('/dashboard', { replace: true });
     } else {
       setError('Credenciales inválidas. Intenta de nuevo.');
     }
   };
+
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -37,8 +40,9 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Usuario</label>
+            <label htmlFor="usuario" className="block text-gray-700 text-sm font-bold mb-2">Usuario</label>
             <input 
+              id="usuario"
               type="text" 
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
               value={username}
@@ -47,8 +51,9 @@ export default function Login() {
             />
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
+            <label htmlFor="contrasena" className="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
             <input 
+              id="contrasena"
               type="password" 
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
               value={password}
